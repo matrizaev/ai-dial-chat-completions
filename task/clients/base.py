@@ -1,7 +1,12 @@
 from abc import ABC, abstractmethod
+from collections.abc import AsyncIterator
 
 from task.constants import API_KEY
 from task.models.message import Message
+
+
+class InvalidResponse(Exception):
+    pass
 
 
 class BaseClient(ABC):
@@ -11,7 +16,7 @@ class BaseClient(ABC):
         if not api_key or api_key.strip() == "":
             raise ValueError("API key cannot be null or empty")
         self._api_key = api_key
-        self._deployment_name= deployment_name
+        self._deployment_name = deployment_name
 
     @abstractmethod
     def get_completion(self, messages: list[Message]) -> Message:
@@ -21,8 +26,8 @@ class BaseClient(ABC):
         ...
 
     @abstractmethod
-    async def stream_completion(self, messages: list[Message]) -> Message:
+    async def stream_completion(self, messages: list[Message]) -> AsyncIterator[Message]:
         """
-        Send asynchronous streaming request to DIAL API and return AI response.
+        Send asynchronous streaming request to DIAL API and yield AI response chunks.
         """
         ...
